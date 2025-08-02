@@ -1,55 +1,27 @@
-from flask import Flask, Response, render_template, request
+from flask import Flask, render_template, Response, request
 import requests
-from bs4 import BeautifulSoup
-import urllib.parse
 
 app = Flask(__name__)
+
+# ✅ The site you want to display
 TARGET_URL = "https://gamep.cloudcrash.shop"
 
 @app.route("/")
-def index():
+def home():
     return render_template("viewer.html")
 
 @app.route("/proxy")
 def proxy():
     try:
         headers = {
-            "User-Agent": request.headers.get("User-Agent", "Mozilla/5.0")
+            "User-Agent": request.headers.get("User-Agent")
         }
-        res = requests.get(TARGET_URL, headers=headers, timeout=10)
-        html = res.text
-
-        soup = BeautifulSoup(html, "html.parser")
-
-        tags = {
-            "link": "href",
-            "script": "src",
-            "img": "src",
-            "iframe": "src",
-            "a": "href"
-        }
-
-        for tag, attr in tags.items():
-            for element in soup.find_all(tag):
-                url = element.get(attr)
-                if url and not url.startswith("http"):
-                    full_url = urllib.parse.urljoin(TARGET_URL, url)
-                    proxied_url = "/fetch?url=" + urllib.parse.quote(full_url)
-                    element[attr] = proxied_url
-
-        return Response(str(soup), content_type="text/html")
-
+        r = requests.get(TARGET_URL, headers=headers, timeout=5)
+        return Response(r.content, content_type=r.headers.get("Content-Type", "text/html"))
     except Exception as e:
-        return f"<h1>Proxy error: {e}</h1>"
-
-@app.route("/fetch")
-def fetch():
-    url = request.args.get("url")
-    try:
-        r = requests.get(url, headers={"User-Agent": request.headers.get("User-Agent", "Mozilla/5.0")})
-        return Response(r.content, content_type=r.headers.get("Content-Type"))
-    except Exception as e:
-        return f"Fetch error: {e}", 500
+        return f"<h1 style='color:red'>Error loading site:</h1><p>{e}</p>"
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    import os
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port)
