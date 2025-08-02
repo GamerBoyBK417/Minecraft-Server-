@@ -2,34 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Live Proxy View</title>
+    <title>Pterodactyl Viewer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         html, body {
             margin: 0;
+            padding: 0;
             height: 100%;
-            overflow: hidden;
-            background: #000;
+            background: #111;
         }
         iframe {
-            border: none;
             width: 100vw;
             height: 100vh;
+            border: none;
         }
     </style>
-    <script>
-        document.addEventListener("contextmenu", e => e.preventDefault());
-        document.addEventListener("keydown", e => {
-            if (
-                e.ctrlKey && ["u", "c", "s", "i", "j"].includes(e.key.toLowerCase()) ||
-                e.key === "F12"
-            ) {
-                e.preventDefault();
-            }
-        });
-    </script>
 </head>
 <body>
-    <iframe src="/proxy"></iframe>
+    <iframe src="/proxy" allowfullscreen></iframe>
 </body>
 </html>
