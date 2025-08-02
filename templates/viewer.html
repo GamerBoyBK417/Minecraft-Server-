@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>🔐 ProTech Viewer</title>
+    <title>🔐 ProTech Fullscreen Viewer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         html, body {
@@ -24,9 +24,8 @@
             z-index: 9999;
         }
     </style>
-
     <script>
-        // Disable right-click and keyboard inspect shortcuts
+        // Disable right-click and inspect shortcuts
         document.addEventListener("contextmenu", e => e.preventDefault());
         document.addEventListener("keydown", function(e) {
             if (
@@ -39,6 +38,6 @@
     </script>
 </head>
 <body>
-    <iframe src="{{ url }}"></iframe>
+    <iframe src="{{ url }}" allowfullscreen></iframe>
 </body>
 </html>
