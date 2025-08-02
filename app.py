@@ -1,17 +1,11 @@
-from flask import Flask, render_template, request
-import os
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
-@app.route("/", methods=["GET", "POST"])
-def index():
-    url = ""
-    if request.method == "POST":
-        url = request.form.get("url")
-        if not url.startswith("http"):
-            url = "https://gamep.cloudcrash.shop/" + url
-    return render_template("index.html", url=url)
+@app.route("/")
+def viewer():
+    url = "https://gamep.cloudcrash.shop"  # Your protected link
+    return render_template("viewer.html", url=url)
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=8080)
