@@ -1,28 +1,29 @@
-from flask import Flask, request, Response
+from flask import Flask, Response, request
 import requests
 
 app = Flask(__name__)
 
-# Change this to your actual target site
-TARGET_URL = "https://gamep.cloudcrash.shop/"
+# Change this to your panel's actual URL
+PTERO_PANEL_URL = "https://gamep.cloudcrash.shop"
 
-@app.route('/')
-def proxy():
+@app.route("/panel")
+def panel_proxy():
     try:
         headers = {
             "User-Agent": request.headers.get("User-Agent"),
-            "Accept": "text/html"
+            "Accept": request.headers.get("Accept", "*/*"),
         }
-        response = requests.get(TARGET_URL, headers=headers, timeout=5)
+        resp = requests.get(PTERO_PANEL_URL, headers=headers, timeout=5)
 
-        return Response(
-            response.content,
-            status=response.status_code,
-            content_type=response.headers.get("Content-Type", "text/html")
-        )
-
+        # Remove X-Frame headers to allow iframe embedding
+        content = resp.content
+        return Response(content, status=resp.status_code, content_type=resp.headers.get("Content-Type", "text/html"))
     except Exception as e:
-        return f"<h1>Error loading site</h1><p>{e}</p>"
+        return f"<h1>Error</h1><p>{str(e)}</p>"
 
-if __name__ == '__main__':
+@app.route("/")
+def viewer():
+    return open("index.html").read()
+
+if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
