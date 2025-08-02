@@ -1,27 +1,28 @@
-from flask import Flask, render_template, Response, request
+from flask import Flask, request, Response
 import requests
 
 app = Flask(__name__)
 
-# ✅ The site you want to display
-TARGET_URL = "https://gamep.cloudcrash.shop"
+# Change this to your actual target site
+TARGET_URL = "https://gamep.cloudcrash.shop/"
 
-@app.route("/")
-def home():
-    return render_template("viewer.html")
-
-@app.route("/proxy")
+@app.route('/')
 def proxy():
     try:
         headers = {
-            "User-Agent": request.headers.get("User-Agent")
+            "User-Agent": request.headers.get("User-Agent"),
+            "Accept": "text/html"
         }
-        r = requests.get(TARGET_URL, headers=headers, timeout=5)
-        return Response(r.content, content_type=r.headers.get("Content-Type", "text/html"))
-    except Exception as e:
-        return f"<h1 style='color:red'>Error loading site:</h1><p>{e}</p>"
+        response = requests.get(TARGET_URL, headers=headers, timeout=5)
 
-if __name__ == "__main__":
-    import os
-    port = int(os.environ.get("PORT", 8080))
-    app.run(host="0.0.0.0", port=port)
+        return Response(
+            response.content,
+            status=response.status_code,
+            content_type=response.headers.get("Content-Type", "text/html")
+        )
+
+    except Exception as e:
+        return f"<h1>Error loading site</h1><p>{e}</p>"
+
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", port=10000)
