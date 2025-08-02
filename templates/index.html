@@ -2,32 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Website Viewer</title>
+    <title>🔐 ProTech Viewer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        input[type="text"] {
-            width: 80%;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-        iframe {
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
             width: 100%;
-            height: 80vh;
-            border: 1px solid #ccc;
-            margin-top: 10px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        iframe {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            border: none;
+            z-index: 9999;
         }
     </style>
+
+    <script>
+        // Disable right-click and keyboard inspect shortcuts
+        document.addEventListener("contextmenu", e => e.preventDefault());
+        document.addEventListener("keydown", function(e) {
+            if (
+                e.ctrlKey && ["u", "c", "s", "i", "j"].includes(e.key.toLowerCase()) ||
+                e.key === "F12"
+            ) {
+                e.preventDefault();
+            }
+        });
+    </script>
 </head>
 <body>
-    <h1>🌐 Website Viewer</h1>
-    <form method="POST">
-        <input type="text" name="url" placeholder="Enter website URL (e.g., example.com)">
-        <button type="submit">View</button>
-    </form>
-
-    {% if url %}
-        <iframe src="{{ url }}" frameborder="0"></iframe>
-    {% endif %}
+    <iframe src="{{ url }}"></iframe>
 </body>
 </html>
