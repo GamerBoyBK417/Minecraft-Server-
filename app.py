@@ -234,17 +234,25 @@ def login_required(f):
             flash('Please log in to access this page.', 'warning')
             return redirect('/login')
         
-        # Check session timeout
+        # --- FIX START ---
+        # Robustly check session timeout
         if 'login_time' in session:
-            login_time = session['login_time']
-            if isinstance(login_time, str): # Handle session data being stringified
-                login_time = datetime.fromisoformat(login_time)
-            if datetime.now() - login_time > timedelta(seconds=Config.SESSION_TIMEOUT):
+            try:
+                # Convert the stored ISO string back to a datetime object
+                login_time = datetime.fromisoformat(session['login_time'])
+                if datetime.now() - login_time > timedelta(seconds=Config.SESSION_TIMEOUT):
+                    session.clear()
+                    flash('Session expired. Please log in again.', 'warning')
+                    return redirect('/login')
+            except (ValueError, TypeError):
+                # If the session data is corrupted, log out the user
                 session.clear()
-                flash('Session expired. Please log in again.', 'warning')
+                flash('Session data was invalid. Please log in again.', 'error')
                 return redirect('/login')
         
-        session['login_time'] = datetime.now().isoformat() # Update timestamp on activity
+        # Update the login time on every request to keep the session alive (sliding session)
+        session['login_time'] = datetime.now().isoformat()
+        # --- FIX END ---
 
         if '_csrf_token' not in session:
             session['_csrf_token'] = secrets.token_hex(16)
@@ -509,6 +517,7 @@ DASHBOARD_TEMPLATE = """
 
         function logActivity(action, type = 'info') {
             const logContainer = document.getElementById('activity-log');
+            if (!logContainer) return;
             const entry = document.createElement('div');
             const timestamp = new Date().toLocaleTimeString();
             
@@ -876,9 +885,17 @@ def logout():
 
 @app.before_request
 def check_csrf():
+    # Only check CSRF for methods that change state
     if request.method in ('POST', 'DELETE', 'PATCH'):
+        # Allow login route to pass through without a CSRF check
+        if request.path == '/login':
+            return
+
         token = session.get('_csrf_token', None)
-        if not token or token != request.headers.get('X-CSRF-Token'):
+        header_token = request.headers.get('X-CSRF-Token')
+        
+        if not token or not header_token or token != header_token:
+            log_action("CSRF Failure", f"Path: {request.path}")
             return jsonify({"error": "CSRF token mismatch"}), 400
 
 @app.route('/')
@@ -914,9 +931,9 @@ def get_stats():
     node_data, n_err = api_client._request("nodes?per_page=1", use_cache=False)
     
     stats = {
-        "total_servers": server_data['meta']['pagination']['total'] if not s_err else 'N/A',
-        "total_users": user_data['meta']['pagination']['total'] if not u_err else 'N/A',
-        "total_nodes": node_data['meta']['pagination']['total'] if not n_err else 'N/A',
+        "total_servers": server_data['meta']['pagination']['total'] if not s_err and server_data else 'N/A',
+        "total_users": user_data['meta']['pagination']['total'] if not u_err and user_data else 'N/A',
+        "total_nodes": node_data['meta']['pagination']['total'] if not n_err and node_data else 'N/A',
         "api_status": "Connected" if not any([s_err, u_err, n_err]) else "Error"
     }
     return jsonify({"stats": stats})
@@ -971,12 +988,16 @@ def server_action(uuid, action):
 def handle_users():
     if request.method == 'POST':
         user_data = request.json
-        required_keys = ['username', 'email', 'first_name', 'last_name', 'password']
+        required_keys = ['username', 'email', 'first_name', 'last_name']
         if not all(k in user_data for k in required_keys):
             return jsonify({"error": "Missing required user fields"}), 400
         if not validate_email(user_data['email']):
             return jsonify({"error": "Invalid email format"}), 400
         
+        # Pterodactyl API requires a password, even if it's being created by an admin
+        if 'password' not in user_data or not user_data['password']:
+            user_data['password'] = secrets.token_urlsafe(16)
+
         data, error = api_client.create_user(user_data)
         log_action("User Create", f"Username: {user_data['username']}")
         if error:
@@ -1013,5 +1034,3 @@ if __name__ == '__main__':
     # Use a production-ready WSGI server like Gunicorn or Waitress instead of app.run in production
     # Example: gunicorn -w 4 -b 0.0.0.0:5001 your_script_name:app
     app.run(debug=False, host='0.0.0.0', port=5001)
-
-
