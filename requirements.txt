@@ -1,6 +1,4 @@
 Flask
 requests
-gunicorn         # For the production server
-Werkzeug         # For password hashing
-Flask-Limiter    # For a better rate limiter
-redis            # The database for Flask-Limiter and Caching
+python-dotenv
+gunicorn
