@@ -1,32 +1,35 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from mcstatus import JavaServer
 
 app = Flask(__name__)
 
-# ===== CONFIG =====
-MC_IP = "play.example.com"   # <-- change to your server IP
-MC_PORT = 25565              # <-- change port if needed
-
-@app.route("/")
+@app.route("/", methods=['GET','POST'])
 def home():
-    try:
-        server = JavaServer.lookup(f"{MC_IP}:{MC_PORT}")
-        status = server.status()
+    status = None
+    ip = None
+    port = None
 
-        server_status = {
-            "online": True,
-            "motd": status.description,
-            "players": f"{status.players.online}/{status.players.max}",
-            "version": status.version.name,
-            "ping": status.latency,
-        }
-    except Exception as e:
-        server_status = {
-            "online": False,
-            "error": str(e)
-        }
+    if request.method == 'POST':
+        ip = request.form.get('ip')
+        port = int(request.form.get('port'))
 
-    return render_template("index.html", status=server_status, ip=MC_IP, port=MC_PORT)
+        try:
+            server = JavaServer.lookup(f"{ip}:{port}")
+            data = server.status()
+            status = {
+                "online": True,
+                "motd": data.description,
+                "players": f"{data.players.online}/{data.players.max}",
+                "version": data.version.name,
+                "ping": data.latency
+            }
+        except Exception as e:
+            status = {
+                "online": False,
+                "error": str(e)
+            }
+
+    return render_template("index.html", status=status, ip=ip, port=port)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
