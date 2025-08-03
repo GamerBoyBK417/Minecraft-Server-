@@ -1,30 +1,42 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <title>Minecraft Server Status</title>
+    <title>Minecraft Server Status Checker</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 
 <div class="container mt-5">
     <div class="card shadow-lg mx-auto" style="max-width: 500px;">
-        <div class="card-body text-center">
-            <h3 class="card-title mb-3">Minecraft Server Status</h3>
-            <p><strong>IP:</strong> {{ ip }} &nbsp;|&nbsp; <strong>Port:</strong> {{ port }}</p>
+        <div class="card-body">
+            <h3 class="text-center mb-3">Minecraft Server Status Checker</h3>
 
-            {% if status.online %}
-                <h5 class="text-success fw-bold">ONLINE ✅</h5>
-                <p><strong>MOTD:</strong> {{ status.motd }}</p>
-                <p><strong>Players:</strong> {{ status.players }}</p>
-                <p><strong>Version:</strong> {{ status.version }}</p>
-                <p><strong>Ping:</strong> {{ status.ping }} ms</p>
-            {% else %}
-                <h5 class="text-danger fw-bold">OFFLINE ❌</h5>
-                <p>{{ status.error }}</p>
+            <form method="POST">
+                <div class="mb-3">
+                    <label>Server IP</label>
+                    <input type="text" name="ip" placeholder="e.g. play.example.com" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label>Port</label>
+                    <input type="number" name="port" value="25565" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Check Server</button>
+            </form>
+
+            {% if status is not none %}
+                <hr>
+                <p><strong>IP:</strong> {{ ip }} | <strong>Port:</strong> {{ port }}</p>
+                {% if status.online %}
+                    <h5 class="text-success">ONLINE ✅</h5>
+                    <p><strong>MOTD:</strong> {{ status.motd }}</p>
+                    <p><strong>Players:</strong> {{ status.players }}</p>
+                    <p><strong>Version:</strong> {{ status.version }}</p>
+                    <p><strong>Ping:</strong> {{ status.ping }} ms</p>
+                {% else %}
+                    <h5 class="text-danger">OFFLINE ❌</h5>
+                    <p>{{ status.error }}</p>
+                {% endif %}
             {% endif %}
-
-            <button onclick="location.reload()" class="btn btn-primary mt-3">Refresh</button>
         </div>
     </div>
 </div>
