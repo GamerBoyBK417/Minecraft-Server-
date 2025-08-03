@@ -1,18 +1,18 @@
 from flask import Flask, render_template
-from mcstatus import MinecraftServer
+from mcstatus import JavaServer
 
 app = Flask(__name__)
 
 # ===== CONFIG =====
-MC_IP = "play.example.com"   # <- change to your server IP
-MC_PORT = 25565              # <- change port if needed
+MC_IP = "play.example.com"   # <-- change to your server IP
+MC_PORT = 25565              # <-- change port if needed
 
 @app.route("/")
 def home():
     try:
-        server = MinecraftServer.lookup(f"{MC_IP}:{MC_PORT}")
+        server = JavaServer.lookup(f"{MC_IP}:{MC_PORT}")
         status = server.status()
-        
+
         server_status = {
             "online": True,
             "motd": status.description,
@@ -25,7 +25,7 @@ def home():
             "online": False,
             "error": str(e)
         }
-        
+
     return render_template("index.html", status=server_status, ip=MC_IP, port=MC_PORT)
 
 if __name__ == "__main__":
