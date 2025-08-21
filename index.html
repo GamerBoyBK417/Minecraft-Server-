@@ -1,18 +1,37 @@
-<form id="ticketForm">
-  <input type="text" name="fullName" placeholder="Your Name" required />
-  <input type="email" name="email" placeholder="Email" required />
-  <input type="text" name="mobile" placeholder="Mobile Number" />
-  <input type="text" name="product" placeholder="Product Name" />
-  <input type="text" name="paymentMethod" placeholder="Payment Method" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Support Ticket Form</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
 
-  <!-- Honeypot (hidden) -->
-  <input type="text" id="honeypot" name="honeypot" style="display:none" tabindex="-1" autocomplete="off" />
+  <form id="ticketForm">
+    <h2 style="text-align:center; margin-bottom: 20px; color:#2a5298;">
+      📩 Submit a Support Ticket
+    </h2>
 
-  <label><input type="checkbox" id="isHuman" /> I am not a robot</label>
+    <input type="text" name="fullName" placeholder="Your Full Name" required />
+    <input type="email" name="email" placeholder="Email Address" required />
+    <input type="text" name="mobile" placeholder="Mobile Number" />
+    <input type="text" name="product" placeholder="Product Name" />
+    <input type="text" name="paymentMethod" placeholder="Payment Method" />
 
-  <button id="submitBtn" type="submit">Submit Ticket</button>
-  <div id="statusMessage"></div>
-  <div id="cooldownMessage" style="display:none"></div>
-</form>
+    <!-- Honeypot (hidden anti-bot field) -->
+    <input type="text" id="honeypot" name="honeypot" style="display:none" tabindex="-1" autocomplete="off" />
 
-<script src="./script.js"></script>
+    <!-- Human check -->
+    <label><input type="checkbox" id="isHuman" /> I am not a robot</label>
+
+    <button id="submitBtn" type="submit">Submit Ticket</button>
+
+    <!-- Status messages -->
+    <div id="statusMessage"></div>
+    <div id="cooldownMessage" style="display:none"></div>
+  </form>
+
+  <script src="script.js"></script>
+</body>
+</html>
