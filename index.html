@@ -1,0 +1,18 @@
+<form id="ticketForm">
+  <input type="text" name="fullName" placeholder="Your Name" required />
+  <input type="email" name="email" placeholder="Email" required />
+  <input type="text" name="mobile" placeholder="Mobile Number" />
+  <input type="text" name="product" placeholder="Product Name" />
+  <input type="text" name="paymentMethod" placeholder="Payment Method" />
+
+  <!-- Honeypot (hidden) -->
+  <input type="text" id="honeypot" name="honeypot" style="display:none" tabindex="-1" autocomplete="off" />
+
+  <label><input type="checkbox" id="isHuman" /> I am not a robot</label>
+
+  <button id="submitBtn" type="submit">Submit Ticket</button>
+  <div id="statusMessage"></div>
+  <div id="cooldownMessage" style="display:none"></div>
+</form>
+
+<script src="./script.js"></script>
