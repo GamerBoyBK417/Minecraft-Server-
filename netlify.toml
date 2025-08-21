@@ -1,0 +1,6 @@
+[build]
+  publish = "."            # index.html root me hai. Agar "public" folder use karo to yaha "public" likho.
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild" # auto-bundle
