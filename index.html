@@ -184,10 +184,10 @@
       <input type="text" id="honeypot" name="honeypot" style="display:none" tabindex="-1" autocomplete="off" />
 
       <!-- Human check -->
-      <label class="custom-checkbox">
+      <label class="custom-checkbox" for="isHuman">
         <input type="checkbox" id="isHuman" required />
         <span class="checkmark"></span>
-        I am not a robot
+        <span>I am not a robot</span>
       </label>
 
       <button id="submitBtn" type="submit">Submit Ticket</button>
@@ -224,7 +224,11 @@
     function disableForm() {
       submitBtn.disabled = true;
       const inputs = form.getElementsByTagName('input');
-      for (let i = 0; i < inputs.length; i++) inputs[i].disabled = true;
+      for (let i = 0; i < inputs.length; i++) {
+        if (inputs[i].id !== 'honeypot') { // keep honeypot untouched
+          inputs[i].disabled = true;
+        }
+      }
     }
 
     function checkCooldown() {
@@ -275,8 +279,7 @@
         });
 
         if (res.ok) {
-          statusMessage.textContent = '✅ Your Order has been submitted successfully!
-💬 Our Support Team is available 24/7 to reply to you.';
+          statusMessage.innerHTML = '✅ Your Order has been submitted successfully!<br>💬 Our Support Team is available 24/7 to reply to you.';
           statusMessage.style.color = 'green';
           form.reset();
           localStorage.setItem('lastTicketSubmission', Date.now().toString());
