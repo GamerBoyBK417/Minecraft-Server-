@@ -31,8 +31,8 @@ export async function handler(event, context) {
 
     // Build Discord embed (server-side)
     const payload = {
-      username: "Ticket Bot",
-      avatar_url: "https://i.imgur.com/4M34Hi2.png",
+      username: "Web Ticket",
+      avatar_url: "https://coramtix.in/favicon.svg",
       embeds: [
         {
           title: "New Support Ticket Received",
