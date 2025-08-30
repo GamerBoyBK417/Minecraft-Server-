@@ -19,6 +19,7 @@ export async function handler(event, context) {
     const data = JSON.parse(event.body || "{}");
     const { fullName, email, mobile, product, paymentMethod } = data;
 
+    // ---------- 1. Required Fields Check ----------
     if (!fullName || !email) {
       return {
         statusCode: 400,
@@ -27,7 +28,17 @@ export async function handler(event, context) {
       };
     }
 
-    // ---------- 1. Send Ticket to Discord ----------
+    // ---------- 2. Email Validation ----------
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return {
+        statusCode: 400,
+        headers: cors,
+        body: JSON.stringify({ ok: false, error: "Invalid email address" }),
+      };
+    }
+
+    // ---------- 3. Send Ticket to Discord ----------
     const discordPayload = {
       username: "Web Ticket",
       avatar_url: "https://coramtix.in/favicon.svg",
@@ -53,18 +64,18 @@ export async function handler(event, context) {
       body: JSON.stringify(discordPayload),
     });
 
-    // ---------- 2. Send Confirmation Email ----------
+    // ---------- 4. Send Confirmation Email ----------
     const emailPayload = {
-      from: "support@coramtix.in",  // Verified domain email
-      to: email,                    // User's email
+      from: "support@coramtix.in",  
+      to: email,                    
       subject: "✅ Your Support Ticket has been Created",
       html: `
         <div style="font-family:Arial,Helvetica,sans-serif;color:#111;">
-          <h2 style="color:#2563eb;">Hello ${fullName},</h2>
+          <h2 style="color:#1E40AF;">Hello ${fullName},</h2>
           <p>Thank you for contacting <b>CoRamTix Support</b>.</p>
           <p>Your ticket has been created successfully. Our team will get back to you within 24 hours.</p>
           <hr style="margin:20px 0;">
-          <h3>📌 Ticket Details:</h3>
+          <h3 style="color:#1E40AF;">📌 Ticket Details:</h3>
           <ul>
             <li><b>Full Name:</b> ${fullName}</li>
             <li><b>Email:</b> ${email}</li>
@@ -73,10 +84,10 @@ export async function handler(event, context) {
             <li><b>Payment Method:</b> ${paymentMethod || "—"}</li>
           </ul>
           <br>
-          <a href="https://coramtix.in/support" style="display:inline-block;padding:10px 20px;background:#2563eb;color:white;text-decoration:none;border-radius:6px;margin-right:10px;">
+          <a href="https://coramtix.in/support" style="display:inline-block;padding:10px 20px;background:#1E40AF;color:white;text-decoration:none;border-radius:6px;margin-right:10px;">
             View Ticket Status
           </a>
-          <a href="https://discord.gg/s5gWDFt558" style="display:inline-block;padding:10px 20px;background:#5865F2;color:white;text-decoration:none;border-radius:6px;">
+          <a href="https://discord.gg/s5gWDFt558" style="display:inline-block;padding:10px 20px;background:#2563EB;color:white;text-decoration:none;border-radius:6px;">
             Join Our Discord
           </a>
           <br><br>
@@ -94,6 +105,7 @@ export async function handler(event, context) {
       body: JSON.stringify(emailPayload),
     });
 
+    // ---------- 5. Success Response ----------
     return {
       statusCode: 200,
       headers: cors,
