@@ -73,8 +73,11 @@ export async function handler(event, context) {
             <li><b>Payment Method:</b> ${paymentMethod || "—"}</li>
           </ul>
           <br>
-          <a href="https://coramtix.in/support" style="display:inline-block;padding:10px 20px;background:#2563eb;color:white;text-decoration:none;border-radius:6px;">
+          <a href="https://coramtix.in/support" style="display:inline-block;padding:10px 20px;background:#2563eb;color:white;text-decoration:none;border-radius:6px;margin-right:10px;">
             View Ticket Status
+          </a>
+          <a href="https://discord.gg/s5gWDFt558" style="display:inline-block;padding:10px 20px;background:#5865F2;color:white;text-decoration:none;border-radius:6px;">
+            Join Our Discord
           </a>
           <br><br>
           <p>Regards,<br><b>CoRamTix Support Team</b></p>
