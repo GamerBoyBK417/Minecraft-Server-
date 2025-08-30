@@ -2,36 +2,207 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>CoTickett Ticket Form</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Body */
+    body {
+      margin: 0;
+      font-family: "Poppins", "Segoe UI", sans-serif;
+      background: #f9fafb;
+      color: #1f2937;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Navbar */
+    header {
+      background: #fff;
+      padding: 14px 20px;
+      position: sticky;
+      top: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+      z-index: 1000;
+    }
+    .logo-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-wrapper img {
+      height: 32px;
+      width: 32px;
+    }
+    .logo-wrapper span {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #111;
+    }
+
+    /* Main Section */
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 15px;
+    }
+    form#ticketForm {
+      background: #fff;
+      padding: 25px 30px;
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      max-width: 420px;
+      width: 100%;
+    }
+    form#ticketForm h2 {
+      color: #4f46e5;
+      margin-bottom: 18px;
+      font-size: 1.4rem;
+      text-align: center;
+    }
+    form#ticketForm input {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 16px; /* iOS zoom fix */
+      outline: none;
+      transition: border 0.3s;
+      box-sizing: border-box;
+    }
+    form#ticketForm input:focus {
+      border-color: #6b46c1;
+    }
+
+    /* Custom Checkbox */
+    .custom-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: #333;
+      cursor: pointer;
+      user-select: none;
+      margin: 15px 0;
+    }
+    .custom-checkbox input {
+      display: none;
+    }
+    .custom-checkbox .checkmark {
+      height: 20px;
+      width: 20px;
+      border-radius: 4px;
+      border: 2px solid #4f46e5;
+      display: inline-block;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    .custom-checkbox input:checked + .checkmark::after {
+      content: "";
+      position: absolute;
+      left: 5px;
+      top: 1px;
+      width: 6px;
+      height: 12px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+    .custom-checkbox input:checked + .checkmark {
+      background: #4f46e5;
+      border-color: #4f46e5;
+    }
+
+    /* Button */
+    #submitBtn {
+      background: linear-gradient(135deg, #6b46c1, #4f46e5);
+      color: #fff;
+      border: none;
+      padding: 14px;
+      width: 100%;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: opacity 0.25s;
+    }
+    #submitBtn:hover {
+      opacity: 0.9;
+    }
+
+    /* Footer */
+    footer {
+      background: linear-gradient(135deg, #1e1b4b, #312e81);
+      color: #fff;
+      text-align: center;
+      padding: 18px 12px;
+      font-size: 14px;
+      margin-top: auto;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      form#ticketForm {
+        padding: 20px;
+      }
+      header .logo-wrapper span {
+        font-size: 18px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-  <form id="ticketForm">
-    <h2 style="text-align:center; margin-bottom: 20px; color:#2a5298;">
-      Order Your Products
-    </h2>
+  <!-- Navigation -->
+  <header>
+    <div class="logo-wrapper">
+      <img src="favicon.svg" alt="CoRamTix Logo">
+      <span>CORAMTIX</span>
+    </div>
+  </header>
 
-    <input type="text" name="fullName" placeholder="Your Full Name" required />
-    <input type="email" name="email" placeholder="Email Address" required />
-    <input type="text" name="mobile" placeholder="Mobile Number" />
-    <input type="text" name="product" placeholder="Product Name" />
-    <input type="text" name="paymentMethod" placeholder="Payment Method" />
+  <!-- Form Section -->
+  <main>
+    <form id="ticketForm">
+      <h2>Order Your Products</h2>
 
-    <!-- Honeypot (hidden anti-bot field) -->
-    <input type="text" id="honeypot" name="honeypot" style="display:none" tabindex="-1" autocomplete="off" />
+      <input type="text" name="fullName" placeholder="Your Full Name" required />
+      <input type="email" name="email" placeholder="Email Address" required />
+      <input type="tel" name="mobile" placeholder="Mobile Number" pattern="[0-9]{10}" maxlength="10" required />
+      <input type="text" name="product" placeholder="Product Name" required />
+      <input type="text" name="paymentMethod" placeholder="Payment Method" required />
 
-    <!-- Human check -->
-    <label><input type="checkbox" id="isHuman" /> I am not a robot</label>
+      <!-- Honeypot -->
+      <input type="text" id="honeypot" name="honeypot" style="display:none" tabindex="-1" autocomplete="off" />
 
-    <button id="submitBtn" type="submit">Submit Ticket</button>
+      <!-- Human check -->
+      <label class="custom-checkbox">
+        <input type="checkbox" id="isHuman" required />
+        <span class="checkmark"></span>
+        I am not a robot
+      </label>
 
-    <!-- Status messages -->
-    <div id="statusMessage"></div>
-    <div id="cooldownMessage" style="display:none"></div>
-  </form>
+      <button id="submitBtn" type="submit">Submit Ticket</button>
 
-  <script src="script.js"></script>
+      <!-- Status messages -->
+      <div id="statusMessage"></div>
+      <div id="cooldownMessage" style="display:none"></div>
+    </form>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; <span id="year"></span> CoRamTix — Premium Server Hosting</p>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
