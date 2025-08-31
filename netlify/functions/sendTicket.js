@@ -1,5 +1,3 @@
-// netlify/functions/sendTicket.js
-
 export async function handler(event, context) {
   const origin = event.headers.origin || "*";
   const cors = {
@@ -44,8 +42,8 @@ export async function handler(event, context) {
       avatar_url: "https://coramtix.in/favicon.svg",
       embeds: [
         {
-          title: "🎟️ New Support Ticket",
-          color: 5814783,
+          title: "New Support Ticket",
+          color: 32804, // Professional blue color (#0050A4)
           fields: [
             { name: "Full Name", value: fullName, inline: true },
             { name: "Email", value: email, inline: true },
@@ -66,16 +64,16 @@ export async function handler(event, context) {
 
     // ---------- 4. Send Confirmation Email ----------
     const emailPayload = {
-      from: "support@coramtix.in",  
-      to: email,                    
-      subject: "✅ Your Support Ticket has been Created",
+      from: "support@coramtix.in",
+      to: email,
+      subject: "Your Support Ticket has been Created",
       html: `
         <div style="font-family:Arial,Helvetica,sans-serif;color:#111;">
-          <h2 style="color:#1E40AF;">Hello ${fullName},</h2>
+          <h2 style="color:#0050A4;">Hello ${fullName},</h2>
           <p>Thank you for contacting <b>CoRamTix Support</b>.</p>
           <p>Your ticket has been created successfully. Our team will get back to you within 24 hours.</p>
           <hr style="margin:20px 0;">
-          <h3 style="color:#1E40AF;">📌 Ticket Details:</h3>
+          <h3 style="color:#0050A4;">Ticket Details:</h3>
           <ul>
             <li><b>Full Name:</b> ${fullName}</li>
             <li><b>Email:</b> ${email}</li>
@@ -84,10 +82,10 @@ export async function handler(event, context) {
             <li><b>Payment Method:</b> ${paymentMethod || "—"}</li>
           </ul>
           <br>
-          <a href="https://coramtix.in/support" style="display:inline-block;padding:10px 20px;background:#1E40AF;color:white;text-decoration:none;border-radius:6px;margin-right:10px;">
+          <a href="https://coramtix.in/support" style="display:inline-block;padding:10px 20px;background:#0050A4;color:white;text-decoration:none;border-radius:6px;margin-right:10px;">
             View Ticket Status
           </a>
-          <a href="https://discord.gg/s5gWDFt558" style="display:inline-block;padding:10px 20px;background:#2563EB;color:white;text-decoration:none;border-radius:6px;">
+          <a href="https://discord.gg/s5gWDFt558" style="display:inline-block;padding:10px 20px;background:#2C71B7;color:white;text-decoration:none;border-radius:6px;">
             Join Our Discord
           </a>
           <br><br>
@@ -113,10 +111,12 @@ export async function handler(event, context) {
     };
 
   } catch (err) {
-    return {
-      statusCode: 500,
-      headers: cors,
-      body: JSON.stringify({ ok: false, error: err.message }),
-    };
+      console.error("Function error:", err.message);
+      return {
+        statusCode: 500,
+        headers: cors,
+        body: JSON.stringify({ ok: false, error: err.message }),
+      };
   }
 }
+
