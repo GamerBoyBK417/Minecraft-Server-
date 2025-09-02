@@ -1,87 +1,74 @@
-// Get form elements
-const form = document.getElementById('ticketForm');
-const statusMessage = document.getElementById('statusMessage');
-const cooldownMessage = document.getElementById('cooldownMessage');
-const submitBtn = document.getElementById('submitBtn');
-
-// Netlify Function endpoint
 const API_ENDPOINT = '/.netlify/functions/sendTicket';
-
-// Cooldown period: 2 days in ms
 const COOLDOWN_PERIOD_MS = 2 * 24 * 60 * 60 * 1000;
 
-// Utilities
-function disableForm() {
-  submitBtn.disabled = true;
-  const inputs = form.getElementsByTagName('input');
-  for (let i = 0; i < inputs.length; i++) inputs[i].disabled = true;
+function disableForm(form) {
+  const btn = form.querySelector(".submitBtn");
+  btn.disabled = true;
+  form.querySelectorAll("input, textarea").forEach(el => (el.disabled = true));
 }
 
-function checkCooldown() {
+function checkCooldown(form) {
   const last = localStorage.getItem('lastTicketSubmission');
+  const msg = form.querySelector(".cooldownMessage");
   if (!last) return;
   const diff = Date.now() - parseInt(last, 10);
   if (diff < COOLDOWN_PERIOD_MS) {
     const remainingHours = Math.ceil((COOLDOWN_PERIOD_MS - diff) / (1000 * 60 * 60));
-    cooldownMessage.textContent = `You can submit another ticket in approximately ${remainingHours} hours.`;
-    cooldownMessage.style.display = 'block';
-    disableForm();
+    msg.textContent = `You can submit another ticket in ~${remainingHours} hours.`;
+    msg.style.display = 'block';
+    disableForm(form);
   }
 }
-document.addEventListener('DOMContentLoaded', checkCooldown);
 
-// Submit handler
-form.addEventListener('submit', async (event) => {
-  event.preventDefault();
+// Attach handler to both forms
+document.querySelectorAll("form.ticketForm").forEach(form => {
+  document.addEventListener("DOMContentLoaded", () => checkCooldown(form));
 
-  // Anti-spam checks
-  const honeypot = document.getElementById('honeypot').value;
-  const isHuman = document.getElementById('isHuman').checked;
-  if (honeypot) return; // silent fail
-  if (!isHuman) {
-    statusMessage.textContent = 'Please check the "I am not a robot" box.';
-    statusMessage.style.color = 'red';
-    return;
-  }
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const btn = form.querySelector(".submitBtn");
+    const msg = form.querySelector(".statusMessage");
 
-  submitBtn.disabled = true;
-  submitBtn.textContent = 'Submitting...';
-  statusMessage.textContent = '';
-
-  // Collect fields
-  const data = {
-    fullName: form.fullName.value,
-    email: form.email.value,
-    mobile: form.mobile.value,
-    product: form.product.value,
-    paymentMethod: form.paymentMethod.value,
-  };
-
-  try {
-    const res = await fetch(API_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-
-    if (res.ok) {
-      statusMessage.textContent = '✅ Ticket submitted successfully!';
-      statusMessage.style.color = 'green';
-      form.reset();
-      localStorage.setItem('lastTicketSubmission', Date.now().toString());
-      checkCooldown();
-    } else {
-      const err = await res.text();
-      statusMessage.textContent = '❌ Failed to submit ticket. ' + err;
-      statusMessage.style.color = 'red';
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Submit Ticket';
+    const email = form.email.value.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      msg.textContent = "❌ Please enter a valid email address.";
+      msg.style.color = "red";
+      return;
     }
-  } catch (e) {
-    console.error(e);
-    statusMessage.textContent = '❌ Network error. Please try again.';
-    statusMessage.style.color = 'red';
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Submit Ticket';
-  }
+
+    btn.disabled = true;
+    btn.textContent = "Submitting...";
+    msg.textContent = "";
+
+    // Collect fields dynamically
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    try {
+      const res = await fetch(API_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (res.ok) {
+        msg.innerHTML = "✅ Ticket submitted successfully!<br>💬 Our Support Team is available 24/7.";
+        msg.style.color = "green";
+        form.reset();
+        localStorage.setItem("lastTicketSubmission", Date.now().toString());
+        checkCooldown(form);
+      } else {
+        const err = await res.text();
+        msg.textContent = "❌ Failed to submit ticket. " + err;
+        msg.style.color = "red";
+        btn.disabled = false;
+        btn.textContent = "Submit Ticket";
+      }
+    } catch (err) {
+      msg.textContent = "❌ Network error. Please try again.";
+      msg.style.color = "red";
+      btn.disabled = false;
+      btn.textContent = "Submit Ticket";
+    }
+  });
 });
