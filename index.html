@@ -25,17 +25,40 @@
     .logo-wrapper { display: flex; align-items: center; gap: 10px; }
     .logo-wrapper img { height: 32px; width: 32px; }
     .logo-wrapper span { font-size: 20px; font-weight: 700; color: #111; }
-    main { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px 15px; }
-    form#ticketForm {
+    main { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 15px; }
+
+    /* Tabs */
+    .tab-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .tab-buttons button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      background: #e5e7eb;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .tab-buttons button.active {
+      background: #1E40AF;
+      color: #fff;
+    }
+
+    form.ticketForm {
       background: #fff;
       padding: 25px 30px;
       border-radius: 14px;
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
       max-width: 420px;
       width: 100%;
+      display: none; /* hidden by default */
     }
-    form#ticketForm h2 { color: #1E40AF; margin-bottom: 18px; font-size: 1.4rem; text-align: center; }
-    form#ticketForm input {
+    form.ticketForm.active { display: block; }
+
+    form.ticketForm h2 { color: #1E40AF; margin-bottom: 18px; font-size: 1.4rem; text-align: center; }
+    form.ticketForm input, form.ticketForm textarea {
       width: 100%;
       padding: 14px;
       margin: 10px 0;
@@ -43,24 +66,25 @@
       border-radius: 10px;
       font-size: 16px;
       outline: none;
-      transition: border 0.3s;
-      box-sizing: border-box;
     }
-    form#ticketForm input:focus { border-color: #1E40AF; }
-    .custom-checkbox { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #333; cursor: pointer; user-select: none; margin: 15px 0; }
+    form.ticketForm input:focus, form.ticketForm textarea:focus { border-color: #1E40AF; }
+
+    .custom-checkbox { display: flex; align-items: center; gap: 10px; font-size: 14px; margin: 10px 0; }
     .custom-checkbox input { display: none; }
     .custom-checkbox .checkmark {
-      height: 20px; width: 20px; border-radius: 4px; border: 2px solid #1E40AF; display: inline-block; position: relative; transition: all 0.3s ease;
-    }
-    .custom-checkbox input:checked + .checkmark::after {
-      content: ""; position: absolute; left: 5px; top: 1px; width: 6px; height: 12px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
+      height: 20px; width: 20px; border-radius: 4px; border: 2px solid #1E40AF; display: inline-block; position: relative;
     }
     .custom-checkbox input:checked + .checkmark { background: #1E40AF; border-color: #1E40AF; }
-    #submitBtn { background: #1E40AF; color: #fff; border: none; padding: 14px; width: 100%; border-radius: 10px; font-size: 16px; cursor: pointer; transition: opacity 0.25s; }
-    #submitBtn:hover { opacity: 0.9; }
-    #submitBtn:disabled { background: #aaa; cursor: not-allowed; }
-    #statusMessage { margin-top: 12px; font-size: 14px; text-align: center; }
-    #cooldownMessage { margin-top: 10px; font-size: 13px; color: #d9534f; text-align: center; }
+    .custom-checkbox input:checked + .checkmark::after {
+      content: ""; position: absolute; left: 5px; top: 1px; width: 6px; height: 12px;
+      border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
+    }
+
+    .submitBtn { background: #1E40AF; color: #fff; border: none; padding: 14px; width: 100%; border-radius: 10px; font-size: 16px; cursor: pointer; }
+    .submitBtn:disabled { background: #aaa; cursor: not-allowed; }
+
+    .statusMessage, .cooldownMessage { margin-top: 12px; font-size: 14px; text-align: center; }
+
     footer { background: linear-gradient(135deg, #1e1b4b, #312e81); color: #fff; text-align: center; padding: 18px 12px; font-size: 14px; }
   </style>
 </head>
@@ -74,22 +98,39 @@
 </header>
 
 <main>
-  <form id="ticketForm">
-    <h2>Order Your Products</h2>
+  <!-- Toggle Buttons -->
+  <div class="tab-buttons">
+    <button id="orderTab" class="active">Order</button>
+    <button id="supportTab">Support</button>
+  </div>
+
+  <!-- Order Form -->
+  <form id="orderForm" class="ticketForm active">
+    <h2>Order Ticket</h2>
     <input type="text" name="fullName" placeholder="Your Full Name" required />
     <input type="email" name="email" placeholder="Email Address" required />
     <input type="tel" name="mobile" placeholder="Mobile Number" pattern="[0-9]{10}" maxlength="10" required />
     <input type="text" name="product" placeholder="Product Name" required />
     <input type="text" name="paymentMethod" placeholder="Payment Method" required />
-    <input type="text" id="honeypot" name="honeypot" style="display:none" tabindex="-1" autocomplete="off" />
-    <label class="custom-checkbox" for="isHuman">
-      <input type="checkbox" id="isHuman" required />
-      <span class="checkmark"></span>
-      <span>I am not a robot</span>
-    </label>
-    <button id="submitBtn" type="submit">Submit Ticket</button>
-    <div id="statusMessage"></div>
-    <div id="cooldownMessage" style="display:none"></div>
+    <input type="hidden" name="ticketType" value="Order" />
+    <label class="custom-checkbox"><input type="checkbox" required /><span class="checkmark"></span><span>I am not a robot</span></label>
+    <button class="submitBtn" type="submit">Submit Ticket</button>
+    <div class="statusMessage"></div>
+    <div class="cooldownMessage" style="display:none"></div>
+  </form>
+
+  <!-- Support Form -->
+  <form id="supportForm" class="ticketForm">
+    <h2>Support Ticket</h2>
+    <input type="text" name="fullName" placeholder="Your Full Name" required />
+    <input type="email" name="email" placeholder="Email Address" required />
+    <input type="tel" name="mobile" placeholder="Mobile Number" pattern="[0-9]{10}" maxlength="10" required />
+    <textarea name="issue" placeholder="Describe your issue..." rows="4" required></textarea>
+    <input type="hidden" name="ticketType" value="Support" />
+    <label class="custom-checkbox"><input type="checkbox" required /><span class="checkmark"></span><span>I am not a robot</span></label>
+    <button class="submitBtn" type="submit">Submit Ticket</button>
+    <div class="statusMessage"></div>
+    <div class="cooldownMessage" style="display:none"></div>
   </form>
 </main>
 
@@ -97,95 +138,28 @@
   <p>&copy; <span id="year"></span> CoRamTix — Premium Server Hosting</p>
 </footer>
 
+<script src="script.js"></script>
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
-  const form = document.getElementById('ticketForm');
-  const statusMessage = document.getElementById('statusMessage');
-  const cooldownMessage = document.getElementById('cooldownMessage');
-  const submitBtn = document.getElementById('submitBtn');
-  const API_ENDPOINT = '/.netlify/functions/sendTicket';
-  const COOLDOWN_PERIOD_MS = 2 * 24 * 60 * 60 * 1000;
 
-  function disableForm() {
-    submitBtn.disabled = true;
-    const inputs = form.getElementsByTagName('input');
-    for (let i = 0; i < inputs.length; i++) {
-      if (inputs[i].id !== 'honeypot') { inputs[i].disabled = true; }
-    }
-  }
+  // Toggle forms
+  const orderTab = document.getElementById("orderTab");
+  const supportTab = document.getElementById("supportTab");
+  const orderForm = document.getElementById("orderForm");
+  const supportForm = document.getElementById("supportForm");
 
-  function checkCooldown() {
-    const last = localStorage.getItem('lastTicketSubmission');
-    if (!last) return;
-    const diff = Date.now() - parseInt(last, 10);
-    if (diff < COOLDOWN_PERIOD_MS) {
-      const remainingHours = Math.ceil((COOLDOWN_PERIOD_MS - diff) / (1000 * 60 * 60));
-      cooldownMessage.textContent = `You can submit another ticket in approximately ${remainingHours} hours.`;
-      cooldownMessage.style.display = 'block';
-      disableForm();
-    }
-  }
-  document.addEventListener('DOMContentLoaded', checkCooldown);
+  orderTab.addEventListener("click", () => {
+    orderTab.classList.add("active");
+    supportTab.classList.remove("active");
+    orderForm.classList.add("active");
+    supportForm.classList.remove("active");
+  });
 
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const honeypot = document.getElementById('honeypot').value;
-    const isHuman = document.getElementById('isHuman').checked;
-    if (honeypot) return;
-    if (!isHuman) {
-      statusMessage.textContent = 'Please check the "I am not a robot" box.';
-      statusMessage.style.color = 'red';
-      return;
-    }
-
-    // Email validation
-    const email = form.email.value.trim();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      statusMessage.textContent = '❌ Please enter a valid email address.';
-      statusMessage.style.color = 'red';
-      return;
-    }
-
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Submitting...';
-    statusMessage.textContent = '';
-
-    const data = {
-      fullName: form.fullName.value,
-      email: email,
-      mobile: form.mobile.value,
-      product: form.product.value,
-      paymentMethod: form.paymentMethod.value,
-    };
-
-    try {
-      const res = await fetch(API_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      if (res.ok) {
-        statusMessage.innerHTML = '✅ Your Order has been submitted successfully!<br>💬 Our Support Team is available 24/7 to reply to you.';
-        statusMessage.style.color = 'green';
-        form.reset();
-        localStorage.setItem('lastTicketSubmission', Date.now().toString());
-        checkCooldown();
-      } else {
-        const err = await res.text();
-        statusMessage.textContent = '❌ Failed to submit ticket. ' + err;
-        statusMessage.style.color = 'red';
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Submit Ticket';
-      }
-    } catch (e) {
-      console.error(e);
-      statusMessage.textContent = '❌ Network error. Please try again.';
-      statusMessage.style.color = 'red';
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Submit Ticket';
-    }
+  supportTab.addEventListener("click", () => {
+    supportTab.classList.add("active");
+    orderTab.classList.remove("active");
+    supportForm.classList.add("active");
+    orderForm.classList.remove("active");
   });
 </script>
 
