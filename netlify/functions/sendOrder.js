@@ -6,7 +6,6 @@ export async function handler(event, context) {
     "Access-Control-Allow-Headers": "Content-Type",
   };
 
-  // Handle preflight
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers: cors };
   }
@@ -18,26 +17,16 @@ export async function handler(event, context) {
     const data = JSON.parse(event.body || "{}");
     const { fullName, email, mobile, product, paymentMethod } = data;
 
-    // Required fields
     if (!fullName || !email || !product) {
-      return {
-        statusCode: 400,
-        headers: cors,
-        body: JSON.stringify({ ok: false, error: "Missing required fields" }),
-      };
+      return { statusCode: 400, headers: cors, body: JSON.stringify({ ok: false, error: "Missing required fields" }) };
     }
 
-    // Email format check
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return {
-        statusCode: 400,
-        headers: cors,
-        body: JSON.stringify({ ok: false, error: "Invalid email address" }),
-      };
+      return { statusCode: 400, headers: cors, body: JSON.stringify({ ok: false, error: "Invalid email address" }) };
     }
 
-    // Discord Payload (Order only)
+    // Discord payload
     const discordPayload = {
       username: "Web Order",
       avatar_url: "https://coramtix.in/favicon.svg",
@@ -57,14 +46,13 @@ export async function handler(event, context) {
       ],
     };
 
-    // Send to Discord webhook
     await fetch(process.env.DISCORD_WEBHOOK_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(discordPayload),
     });
 
-    // Email Confirmation
+    // Email confirmation
     const emailPayload = {
       from: "support@coramtix.in",
       to: email,
@@ -105,17 +93,9 @@ export async function handler(event, context) {
       body: JSON.stringify(emailPayload),
     });
 
-    return {
-      statusCode: 200,
-      headers: cors,
-      body: JSON.stringify({ ok: true, message: "Order created & email sent" }),
-    };
+    return { statusCode: 200, headers: cors, body: JSON.stringify({ ok: true, message: "Order created & email sent" }) };
   } catch (err) {
     console.error("Function error:", err.message);
-    return {
-      statusCode: 500,
-      headers: cors,
-      body: JSON.stringify({ ok: false, error: err.message }),
-    };
+    return { statusCode: 500, headers: cors, body: JSON.stringify({ ok: false, error: err.message }) };
   }
 }
