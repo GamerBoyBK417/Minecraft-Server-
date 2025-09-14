@@ -6,6 +6,7 @@ export async function handler(event, context) {
     "Access-Control-Allow-Headers": "Content-Type",
   };
 
+  // Handle preflight
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers: cors };
   }
@@ -15,45 +16,48 @@ export async function handler(event, context) {
 
   try {
     const data = JSON.parse(event.body || "{}");
-    const { fullName, email, mobile, product, paymentMethod, issue, ticketType } = data;
+    const { fullName, email, mobile, product, paymentMethod } = data;
 
-    if (!fullName || !email || !ticketType) {
-      return { statusCode: 400, headers: cors, body: JSON.stringify({ ok: false, error: "Missing required fields" }) };
+    // Required fields
+    if (!fullName || !email || !product) {
+      return {
+        statusCode: 400,
+        headers: cors,
+        body: JSON.stringify({ ok: false, error: "Missing required fields" }),
+      };
     }
 
+    // Email format check
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return { statusCode: 400, headers: cors, body: JSON.stringify({ ok: false, error: "Invalid email address" }) };
+      return {
+        statusCode: 400,
+        headers: cors,
+        body: JSON.stringify({ ok: false, error: "Invalid email address" }),
+      };
     }
 
-    // Discord Payload
+    // Discord Payload (Order only)
     const discordPayload = {
-      username: "Web Ticket",
+      username: "Web Order",
       avatar_url: "https://coramtix.in/favicon.svg",
       embeds: [
         {
-          title: ticketType === "Support" ? "New Support Ticket" : "New Order Ticket",
-          color: ticketType === "Support" ? 15105570 : 32804,
+          title: "New Order Ticket",
+          color: 32804,
           fields: [
-            { name: "Ticket Type", value: ticketType, inline: true },
             { name: "Full Name", value: fullName, inline: true },
             { name: "Email", value: email, inline: true },
             { name: "Mobile", value: mobile || "—", inline: true },
+            { name: "Product", value: product || "—", inline: true },
+            { name: "Payment Method", value: paymentMethod || "—", inline: true },
           ],
           timestamp: new Date().toISOString(),
         },
       ],
     };
 
-    if (ticketType === "Order") {
-      discordPayload.embeds[0].fields.push(
-        { name: "Product", value: product || "—", inline: true },
-        { name: "Payment Method", value: paymentMethod || "—", inline: true }
-      );
-    } else if (ticketType === "Support") {
-      discordPayload.embeds[0].fields.push({ name: "Issue", value: issue || "—", inline: false });
-    }
-
+    // Send to Discord webhook
     await fetch(process.env.DISCORD_WEBHOOK_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -64,32 +68,30 @@ export async function handler(event, context) {
     const emailPayload = {
       from: "support@coramtix.in",
       to: email,
-      subject: `Your ${ticketType} Ticket has been Created`,
+      subject: `Your Order Ticket has been Created`,
       html: `
         <div style="font-family:Arial,Helvetica,sans-serif;color:#111;">
           <h2 style="color:#0050A4;">Hello ${fullName},</h2>
-          <p>Thank you for creating a <b>${ticketType}</b> ticket with <b>CoRamTix Support</b>.</p>
-          <p>Your ticket has been created successfully. Our team will get back to you within 24 hours.</p>
+          <p>Thank you for placing an <b>Order</b> with <b>CoRamTix</b>.</p>
+          <p>Your order ticket has been created successfully. Our team will contact you within 24 hours.</p>
           <hr style="margin:20px 0;">
-          <h3 style="color:#0050A4;">Ticket Details:</h3>
+          <h3 style="color:#0050A4;">Order Details:</h3>
           <ul>
-            <li><b>Ticket Type:</b> ${ticketType}</li>
             <li><b>Full Name:</b> ${fullName}</li>
             <li><b>Email:</b> ${email}</li>
             <li><b>Mobile:</b> ${mobile || "—"}</li>
-            ${ticketType === "Order"
-              ? `<li><b>Product:</b> ${product || "—"}</li><li><b>Payment Method:</b> ${paymentMethod || "—"}</li>`
-              : `<li><b>Issue:</b> ${issue || "—"}</li>`}
+            <li><b>Product:</b> ${product || "—"}</li>
+            <li><b>Payment Method:</b> ${paymentMethod || "—"}</li>
           </ul>
           <br>
           <a href="https://coramtix.in/support" style="display:inline-block;padding:10px 20px;background:#0050A4;color:white;text-decoration:none;border-radius:6px;margin-right:10px;">
-            View Ticket Status
+            View Order Status
           </a>
           <a href="https://discord.gg/s5gWDFt558" style="display:inline-block;padding:10px 20px;background:#2C71B7;color:white;text-decoration:none;border-radius:6px;">
             Join Our Discord
           </a>
           <br><br>
-          <p>Regards,<br><b>CoRamTix Support Team</b></p>
+          <p>Regards,<br><b>CoRamTix Team</b></p>
         </div>
       `,
     };
@@ -97,16 +99,23 @@ export async function handler(event, context) {
     await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${process.env.RESEND_API_KEY}`,
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(emailPayload),
     });
 
-    return { statusCode: 200, headers: cors, body: JSON.stringify({ ok: true, message: "Ticket created & email sent" }) };
-
+    return {
+      statusCode: 200,
+      headers: cors,
+      body: JSON.stringify({ ok: true, message: "Order created & email sent" }),
+    };
   } catch (err) {
     console.error("Function error:", err.message);
-    return { statusCode: 500, headers: cors, body: JSON.stringify({ ok: false, error: err.message }) };
+    return {
+      statusCode: 500,
+      headers: cors,
+      body: JSON.stringify({ ok: false, error: err.message }),
+    };
   }
 }
