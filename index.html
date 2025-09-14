@@ -3,89 +3,171 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>CoTickett Ticket Form</title>
+  <title>Order Ticket – CoRamTix</title>
   <style>
     body {
       margin: 0;
       font-family: "Poppins", "Segoe UI", sans-serif;
-      background: #f9fafb;
-      color: #1f2937;
+      background: #F3F4F6; /* light grey */
+      color: #1F2937; /* dark text */
       display: flex;
       flex-direction: column;
       min-height: 100vh;
     }
+
     header {
-      background: #fff;
+      background: #FFFFFF;
       padding: 14px 20px;
       display: flex;
       justify-content: center;
       align-items: center;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid #E5E7EB;
     }
-    .logo-wrapper { display: flex; align-items: center; gap: 10px; }
-    .logo-wrapper img { height: 32px; width: 32px; }
-    .logo-wrapper span { font-size: 20px; font-weight: 700; color: #111; }
-    main { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 15px; }
 
-    /* Tabs */
-    .tab-buttons {
+    .logo-wrapper {
       display: flex;
+      align-items: center;
       gap: 10px;
-      margin-bottom: 20px;
     }
-    .tab-buttons button {
-      padding: 10px 18px;
-      border: none;
-      border-radius: 8px;
-      background: #e5e7eb;
-      cursor: pointer;
-      font-weight: 600;
+    .logo-wrapper img {
+      height: 32px;
+      width: 32px;
     }
-    .tab-buttons button.active {
-      background: #1E40AF;
-      color: #fff;
+    .logo-wrapper span {
+      font-size: 20px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 15px;
     }
 
     form.ticketForm {
-      background: #fff;
+      background: #FFFFFF;
       padding: 25px 30px;
       border-radius: 14px;
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-      max-width: 420px;
+      max-width: 600px;
       width: 100%;
-      display: none; /* hidden by default */
     }
-    form.ticketForm.active { display: block; }
 
-    form.ticketForm h2 { color: #1E40AF; margin-bottom: 18px; font-size: 1.4rem; text-align: center; }
-    form.ticketForm input, form.ticketForm textarea {
+    form.ticketForm h2 {
+      color: #1E40AF; /* primary blue */
+      margin-bottom: 18px;
+      font-size: 1.4rem;
+      text-align: center;
+    }
+
+    form.ticketForm input,
+    form.ticketForm textarea {
       width: 100%;
       padding: 14px;
       margin: 10px 0;
-      border: 1px solid #ddd;
+      border: 1px solid #D1D5DB; /* light grey */
       border-radius: 10px;
       font-size: 16px;
       outline: none;
+      box-sizing: border-box;
     }
-    form.ticketForm input:focus, form.ticketForm textarea:focus { border-color: #1E40AF; }
+    form.ticketForm input:focus,
+    form.ticketForm textarea:focus {
+      border-color: #3B82F6; /* bright blue focus */
+    }
 
-    .custom-checkbox { display: flex; align-items: center; gap: 10px; font-size: 14px; margin: 10px 0; }
-    .custom-checkbox input { display: none; }
+    .custom-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      margin: 10px 0;
+    }
+    .custom-checkbox input {
+      display: none;
+    }
     .custom-checkbox .checkmark {
-      height: 20px; width: 20px; border-radius: 4px; border: 2px solid #1E40AF; display: inline-block; position: relative;
+      height: 20px;
+      width: 20px;
+      border-radius: 4px;
+      border: 2px solid #1E40AF;
+      display: inline-block;
+      position: relative;
+      flex-shrink: 0;
     }
-    .custom-checkbox input:checked + .checkmark { background: #1E40AF; border-color: #1E40AF; }
+    .custom-checkbox input:checked + .checkmark {
+      background: #1E40AF;
+      border-color: #1E40AF;
+    }
     .custom-checkbox input:checked + .checkmark::after {
-      content: ""; position: absolute; left: 5px; top: 1px; width: 6px; height: 12px;
-      border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
+      content: "";
+      position: absolute;
+      left: 5px;
+      top: 1px;
+      width: 6px;
+      height: 12px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
     }
 
-    .submitBtn { background: #1E40AF; color: #fff; border: none; padding: 14px; width: 100%; border-radius: 10px; font-size: 16px; cursor: pointer; }
-    .submitBtn:disabled { background: #aaa; cursor: not-allowed; }
+    .submitBtn {
+      background: #1E40AF;
+      color: #FFFFFF;
+      border: none;
+      padding: 14px;
+      width: 100%;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background .2s ease;
+    }
+    .submitBtn:hover {
+      background: #3746A1; /* slightly darker */
+    }
+    .submitBtn:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
 
-    .statusMessage, .cooldownMessage { margin-top: 12px; font-size: 14px; text-align: center; }
+    .statusMessage,
+    .cooldownMessage {
+      margin-top: 12px;
+      font-size: 14px;
+      text-align: center;
+    }
 
-    footer { background: linear-gradient(135deg, #1e1b4b, #312e81); color: #fff; text-align: center; padding: 18px 12px; font-size: 14px; }
+    footer {
+      background: linear-gradient(135deg, #1E1B4B, #312E81);
+      color: #FFFFFF;
+      text-align: center;
+      padding: 18px 12px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+      main {
+        padding: 20px 10px;
+      }
+      form.ticketForm {
+        padding: 20px;
+      }
+      form.ticketForm h2 {
+        font-size: 1.2rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      form.ticketForm {
+        padding: 35px 40px;
+      }
+      form.ticketForm h2 {
+        font-size: 1.6rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -98,14 +180,7 @@
 </header>
 
 <main>
-  <!-- Toggle Buttons -->
-  <div class="tab-buttons">
-    <button id="orderTab" class="active">Order</button>
-    <button id="supportTab">Support</button>
-  </div>
-
-  <!-- Order Form -->
-  <form id="orderForm" class="ticketForm active">
+  <form id="orderForm" class="ticketForm">
     <h2>Order Ticket</h2>
     <input type="text" name="fullName" placeholder="Your Full Name" required />
     <input type="email" name="email" placeholder="Email Address" required />
@@ -113,21 +188,11 @@
     <input type="text" name="product" placeholder="Product Name" required />
     <input type="text" name="paymentMethod" placeholder="Payment Method" required />
     <input type="hidden" name="ticketType" value="Order" />
-    <label class="custom-checkbox"><input type="checkbox" required /><span class="checkmark"></span><span>I am not a robot</span></label>
-    <button class="submitBtn" type="submit">Submit Ticket</button>
-    <div class="statusMessage"></div>
-    <div class="cooldownMessage" style="display:none"></div>
-  </form>
-
-  <!-- Support Form -->
-  <form id="supportForm" class="ticketForm">
-    <h2>Support Ticket</h2>
-    <input type="text" name="fullName" placeholder="Your Full Name" required />
-    <input type="email" name="email" placeholder="Email Address" required />
-    <input type="tel" name="mobile" placeholder="Mobile Number" pattern="[0-9]{10}" maxlength="10" required />
-    <textarea name="issue" placeholder="Describe your issue..." rows="4" required></textarea>
-    <input type="hidden" name="ticketType" value="Support" />
-    <label class="custom-checkbox"><input type="checkbox" required /><span class="checkmark"></span><span>I am not a robot</span></label>
+    <label class="custom-checkbox">
+      <input type="checkbox" name="captchaOrder" required />
+      <span class="checkmark"></span>
+      <span>I am not a robot</span>
+    </label>
     <button class="submitBtn" type="submit">Submit Ticket</button>
     <div class="statusMessage"></div>
     <div class="cooldownMessage" style="display:none"></div>
@@ -138,28 +203,84 @@
   <p>&copy; <span id="year"></span> CoRamTix — Premium Server Hosting</p>
 </footer>
 
-<script src="script.js"></script>
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
 
-  // Toggle forms
-  const orderTab = document.getElementById("orderTab");
-  const supportTab = document.getElementById("supportTab");
-  const orderForm = document.getElementById("orderForm");
-  const supportForm = document.getElementById("supportForm");
+  // === Ticket form JS ===
+  const API_ENDPOINT = '/.netlify/functions/sendTicket';
+  const COOLDOWN_PERIOD_MS = 2 * 24 * 60 * 60 * 1000;
 
-  orderTab.addEventListener("click", () => {
-    orderTab.classList.add("active");
-    supportTab.classList.remove("active");
-    orderForm.classList.add("active");
-    supportForm.classList.remove("active");
-  });
+  function disableForm(form) {
+    const btn = form.querySelector(".submitBtn");
+    btn.disabled = true;
+    form.querySelectorAll("input, textarea").forEach(el => (el.disabled = true));
+  }
 
-  supportTab.addEventListener("click", () => {
-    supportTab.classList.add("active");
-    orderTab.classList.remove("active");
-    supportForm.classList.add("active");
-    orderForm.classList.remove("active");
+  function checkCooldown(form) {
+    const last = localStorage.getItem('lastTicketSubmission');
+    const msg = form.querySelector(".cooldownMessage");
+    if (!last) return;
+    const diff = Date.now() - parseInt(last, 10);
+    if (diff < COOLDOWN_PERIOD_MS) {
+      const remainingHours = Math.ceil((COOLDOWN_PERIOD_MS - diff) / (1000 * 60 * 60));
+      msg.textContent = `You can submit another ticket in ~${remainingHours} hours.`;
+      msg.style.display = 'block';
+      disableForm(form);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector("form.ticketForm");
+    if (!form) return;
+
+    checkCooldown(form);
+
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      const btn = form.querySelector(".submitBtn");
+      const msg = form.querySelector(".statusMessage");
+
+      const email = form.email.value.trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        msg.textContent = "❌ Please enter a valid email address.";
+        msg.style.color = "red";
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Submitting...";
+      msg.textContent = "";
+
+      const data = Object.fromEntries(new FormData(form).entries());
+
+      try {
+        const res = await fetch(API_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+
+        if (res.ok) {
+          msg.innerHTML = "✅ Ticket submitted successfully!<br>💬 Our Support Team is available 24/7.";
+          msg.style.color = "green";
+          form.reset();
+          localStorage.setItem("lastTicketSubmission", Date.now().toString());
+          checkCooldown(form);
+        } else {
+          const err = await res.text();
+          msg.textContent = "❌ Failed to submit ticket. " + err;
+          msg.style.color = "red";
+          btn.disabled = false;
+          btn.textContent = "Submit Ticket";
+        }
+      } catch (err) {
+        msg.textContent = "❌ Network error. Please try again.";
+        msg.style.color = "red";
+        btn.disabled = false;
+        btn.textContent = "Submit Ticket";
+      }
+    });
   });
 </script>
 
