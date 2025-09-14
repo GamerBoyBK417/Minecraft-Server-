@@ -8,7 +8,7 @@ const COOLDOWN_PERIOD_MS = 2 * 24 * 60 * 60 * 1000; // 2 days
 
 function disableForm() {
   submitBtn.disabled = true;
-  Array.from(form.querySelectorAll("input")).forEach(el => (el.disabled = true));
+  Array.from(form.elements).forEach(el => (el.disabled = true));
 }
 
 function checkCooldown() {
@@ -23,28 +23,33 @@ function checkCooldown() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('year').textContent = new Date().getFullYear();
-  checkCooldown();
-});
+document.addEventListener('DOMContentLoaded', checkCooldown);
 
-form.addEventListener('submit', async e => {
+form.addEventListener('submit', async (e) => {
   e.preventDefault();
+  statusMessage.textContent = '';
 
+  // Anti-spam check
   const honeypot = document.getElementById('honeypot').value;
   const isHuman = document.getElementById('isHuman').checked;
-  if (honeypot) return; // silent spam fail
+  if (honeypot) return; // bot filled hidden field
   if (!isHuman) {
-    statusMessage.textContent = 'Please check the "I am not a robot" box.';
+    statusMessage.textContent = 'Please check "I am not a robot".';
     statusMessage.style.color = 'red';
     return;
   }
 
   submitBtn.disabled = true;
   submitBtn.textContent = 'Submitting...';
-  statusMessage.textContent = '';
 
-  const data = Object.fromEntries(new FormData(form).entries());
+  const data = {
+    ticketType: 'Order',
+    fullName: form.fullName.value,
+    email: form.email.value,
+    mobile: form.mobile.value,
+    product: form.product.value,
+    paymentMethod: form.paymentMethod.value,
+  };
 
   try {
     const res = await fetch(API_ENDPOINT, {
@@ -54,7 +59,7 @@ form.addEventListener('submit', async e => {
     });
 
     if (res.ok) {
-      statusMessage.textContent = '✅ Order ticket submitted successfully!';
+      statusMessage.textContent = '✅ Order submitted successfully!';
       statusMessage.style.color = 'green';
       form.reset();
       localStorage.setItem('lastOrderSubmission', Date.now().toString());
@@ -64,13 +69,13 @@ form.addEventListener('submit', async e => {
       statusMessage.textContent = '❌ Failed to submit order. ' + err;
       statusMessage.style.color = 'red';
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Submit Order';
+      submitBtn.textContent = 'Place Order';
     }
   } catch (err) {
     console.error(err);
     statusMessage.textContent = '❌ Network error. Please try again.';
     statusMessage.style.color = 'red';
     submitBtn.disabled = false;
-    submitBtn.textContent = 'Submit Order';
+    submitBtn.textContent = 'Place Order';
   }
 });
