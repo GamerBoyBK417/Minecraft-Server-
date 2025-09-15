@@ -1,7 +1,7 @@
 // update year
 document.getElementById('copyright-year').textContent = new Date().getFullYear();
 
-const cooldownSeconds = 30; // anti-spam cooldown
+const cooldownSeconds = 300; // anti-spam cooldown
 let lastSubmitTime = 0;
 
 document.getElementById('orderForm').addEventListener('submit', async (e) => {
