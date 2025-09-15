@@ -2,52 +2,84 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>CoRamTix Order Ticket</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CoRamTix — Submit Ticket</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<header>
-  <div class="logo">
-    <img src="favicon.svg" alt="CoRamTix Logo">
-    <span>CORAMTIX</span>
-  </div>
-</header>
+<body class="bg-gray-50 flex flex-col min-h-screen">
 
-<main>
-  <form id="orderForm" class="ticketForm">
-    <h2>Order Ticket</h2>
-    <div class="field">
-      <input type="text" name="fullName" placeholder="Your Full Name" required>
+  <!-- HEADER -->
+  <header class="bg-white shadow">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <img src="favicon.svg" alt="CoRamTix Logo" class="h-8 w-8">
+        <span class="font-bold text-xl text-gray-800">CORAMTIX</span>
+      </div>
+      <nav class="hidden md:flex space-x-6 text-gray-700 font-medium">
+        <a href="#" class="hover:text-indigo-600">Game Hosting</a>
+        <a href="#" class="hover:text-indigo-600">Bot Hosting</a>
+        <a href="#" class="hover:text-indigo-600">VPS Hosting</a>
+        <a href="#" class="hover:text-indigo-600">Support</a>
+        <a href="#" class="hover:text-indigo-600">Login</a>
+      </nav>
     </div>
-    <div class="field">
-      <input type="email" name="email" placeholder="Email Address" required>
-    </div>
-    <div class="field">
-      <input type="tel" name="mobile" placeholder="Mobile Number" pattern="[0-9]{10}" maxlength="10" required>
-    </div>
-    <div class="field">
-      <input type="text" name="product" placeholder="Product Name" required>
-    </div>
-    <div class="field">
-      <input type="text" name="paymentMethod" placeholder="Payment Method" required>
-    </div>
-    <input type="hidden" name="ticketType" value="Order">
-    <label class="custom-checkbox">
-      <input type="checkbox" id="humanCheck" required>
-      <span class="checkmark"></span><span>I am not a robot</span>
-    </label>
-    <button id="submitBtn" class="submitBtn" type="submit">Submit Ticket</button>
-    <div id="statusMessage" class="statusMessage"></div>
-    <div id="cooldownMessage" class="cooldownMessage" style="display:none"></div>
-  </form>
-</main>
+  </header>
 
-<footer>
-  &copy; <span id="year"></span> CoRamTix — Premium Server Hosting
-</footer>
+  <!-- MAIN CONTENT: Ticket Form -->
+  <main class="flex-grow bg-gray-50 py-16">
+    <div class="container mx-auto px-6 max-w-2xl">
+      <h1 class="text-4xl font-extrabold text-gray-800 text-center mb-6">Submit a Ticket</h1>
+      <p class="text-lg text-gray-600 text-center mb-10">Our support team is available 24/7 to help you. Fill out the form below and we’ll get back to you quickly.</p>
 
-<script src="script.js"></script>
-<script>document.getElementById('year').textContent=new Date().getFullYear()</script>
+      <form id="ticketForm" class="bg-white shadow-lg rounded-xl p-8 space-y-5">
+        <!-- Honeypot hidden field -->
+        <input type="text" name="honeypot" id="honeypot" style="display:none">
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+          <input type="text" name="name" required class="w-full border-gray-300 rounded-lg px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500"/>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+          <input type="email" name="email" required class="w-full border-gray-300 rounded-lg px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500"/>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+          <input type="text" name="subject" required class="w-full border-gray-300 rounded-lg px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500"/>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+          <textarea name="message" rows="5" required class="w-full border-gray-300 rounded-lg px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input id="captchaCheck" type="checkbox" required class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+          <label for="captchaCheck" class="text-sm text-gray-700">I am not a robot</label>
+        </div>
+
+        <button type="submit" class="w-full bg-indigo-600 text-white font-medium px-6 py-3 rounded-lg hover:bg-indigo-700">Submit Ticket</button>
+        <div id="ticketStatus" class="text-center text-sm mt-2"></div>
+      </form>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-gray-800 text-white">
+    <div class="container mx-auto px-6 py-12">
+      <nav class="flex justify-center flex-wrap gap-x-6 gap-y-2 mb-8">
+        <a href="/terms-of-service" class="text-gray-400 hover:text-white">Terms of service</a>
+        <a href="/privacy-policy" class="text-gray-400 hover:text-white">Privacy policy</a>
+        <a href="/refund-policy" class="text-gray-400 hover:text-white">Refund policy</a>
+      </nav>
+      <div class="text-center text-gray-500 border-t border-gray-700 pt-8">
+        <p>&copy; <span id="copyright-year"></span> CoRamTix — Premium Server Hosting</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
