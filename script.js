@@ -1,75 +1,53 @@
-const form = document.getElementById('orderForm');
-const statusMessage = document.getElementById('statusMessage');
-const cooldownMessage = document.getElementById('cooldownMessage');
-const submitBtn = document.getElementById('submitBtn');
+// update year
+document.getElementById('copyright-year').textContent = new Date().getFullYear();
 
-const API_ENDPOINT = '/.netlify/functions/sendTicket';
-const COOLDOWN_PERIOD_MS = 2 * 24 * 60 * 60 * 1000; // 2 days
+// cooldown seconds for anti-spam
+const cooldownSeconds = 400;
+let lastSubmitTime = 0;
 
-function disableForm() {
-  submitBtn.disabled = true;
-  [...form.querySelectorAll('input')].forEach(i => i.disabled = true);
-}
-
-function checkCooldown() {
-  const last = localStorage.getItem('lastTicketSubmission');
-  if (!last) return;
-  const diff = Date.now() - parseInt(last, 10);
-  if (diff < COOLDOWN_PERIOD_MS) {
-    const remainingHours = Math.ceil((COOLDOWN_PERIOD_MS - diff) / (1000 * 60 * 60));
-    cooldownMessage.textContent = `You can submit another ticket in approximately ${remainingHours} hours.`;
-    cooldownMessage.style.display = 'block';
-    disableForm();
-  }
-}
-document.addEventListener('DOMContentLoaded', checkCooldown);
-
-form.addEventListener('submit', async (e) => {
+document.getElementById('ticketForm').addEventListener('submit', async (e) => {
   e.preventDefault();
+  const status = document.getElementById('ticketStatus');
+  status.className = 'text-center text-sm mt-2';
 
-  // Anti-bot check
-  if (!document.getElementById('humanCheck').checked) {
-    statusMessage.textContent = 'Please confirm you are not a robot.';
-    statusMessage.style.color = 'red';
+  // honeypot anti-bot
+  if (document.getElementById('honeypot').value.trim() !== '') {
+    // hidden field filled -> bot
     return;
   }
 
-  submitBtn.disabled = true;
-  submitBtn.textContent = 'Submitting...';
-  statusMessage.textContent = '';
+  // check captcha checkbox
+  if (!document.getElementById('captchaCheck').checked) {
+    status.textContent = 'Please confirm you are not a robot.';
+    status.classList.add('text-red-500');
+    return;
+  }
 
-  const data = {
-    fullName: form.fullName.value,
-    email: form.email.value,
-    mobile: form.mobile.value,
-    product: form.product.value,
-    paymentMethod: form.paymentMethod.value,
-    ticketType: form.ticketType.value
-  };
+  // cooldown anti-spam
+  const now = Date.now();
+  if (now - lastSubmitTime < cooldownSeconds * 1000) {
+    const remaining = Math.ceil((cooldownSeconds * 1000 - (now - lastSubmitTime)) / 1000);
+    status.textContent = `Please wait ${remaining}s before submitting again.`;
+    status.classList.add('text-yellow-500');
+    return;
+  }
+
+  // collect form data
+  const formData = new FormData(e.target);
+  const payload = Object.fromEntries(formData.entries());
 
   try {
-    const res = await fetch(API_ENDPOINT, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(data)
-    });
-    if (res.ok) {
-      statusMessage.textContent = '✅ Ticket submitted successfully!';
-      statusMessage.style.color = 'green';
-      form.reset();
-      localStorage.setItem('lastTicketSubmission', Date.now().toString());
-      checkCooldown();
-    } else {
-      const err = await res.text();
-      statusMessage.textContent = '❌ Failed to submit ticket. '+err;
-      statusMessage.style.color = 'red';
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Submit Ticket';
-    }
+    // Replace with your backend endpoint
+    // await fetch('/api/ticket', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+
+    console.log('Ticket payload', payload);
+
+    lastSubmitTime = now;
+    status.textContent = '✅ Ticket submitted successfully (demo).';
+    status.classList.add('text-green-600');
+    e.target.reset();
   } catch (err) {
-    statusMessage.textContent = '❌ Network error. Please try again.';
-    statusMessage.style.color = 'red';
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Submit Ticket';
+    status.textContent = '❌ Error submitting ticket.';
+    status.classList.add('text-red-500');
   }
 });
