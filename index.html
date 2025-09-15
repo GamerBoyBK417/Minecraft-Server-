@@ -1,72 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CoRamTix — Place Order</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>CoRamTix Order Ticket</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
 </head>
-<body class="bg-gray-50 flex flex-col min-h-screen">
-
+<body class="bg-gray-50 min-h-screen flex flex-col">
   <!-- HEADER -->
   <header class="bg-white shadow">
-    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
       <div class="flex items-center space-x-3">
-        <img src="favicon.svg" alt="CoRamTix Logo" class="h-8 w-8">
+        <img src="favicon.svg" class="h-8 w-8" alt="CoRamTix Logo">
         <span class="font-bold text-xl text-gray-800">CORAMTIX</span>
       </div>
-      <nav class="hidden md:flex space-x-6 text-gray-700 font-medium">
-        <a href="#" class="hover:text-indigo-600">Game Hosting</a>
-        <a href="#" class="hover:text-indigo-600">Bot Hosting</a>
-        <a href="#" class="hover:text-indigo-600">VPS Hosting</a>
-        <a href="#" class="hover:text-indigo-600">Login</a>
+      <nav class="space-x-6 hidden md:block">
+        <a href="#" class="text-gray-600 hover:text-gray-900">Game Hosting</a>
+        <a href="#" class="text-gray-600 hover:text-gray-900">Bot Hosting</a>
+        <a href="#" class="text-gray-600 hover:text-gray-900">VPS Hosting</a>
+        <a href="#" class="text-gray-600 hover:text-gray-900">Login</a>
       </nav>
     </div>
   </header>
 
-  <!-- MAIN CONTENT: Order Form -->
-  <main class="flex-grow bg-gray-50 py-16">
-    <div class="container mx-auto px-6 max-w-2xl">
-      <h1 class="text-4xl font-extrabold text-gray-800 text-center mb-6">Place an Order</h1>
-      <p class="text-lg text-gray-600 text-center mb-10">Fill out the form below to place your order.</p>
+  <!-- MAIN -->
+  <main class="flex-grow py-12">
+    <div class="max-w-xl mx-auto px-4">
+      <h1 class="text-3xl font-extrabold text-center mb-2 text-gray-800">Place an Order</h1>
+      <p class="text-gray-600 text-center mb-8">Fill out the form below and we’ll contact you within 24 hours.</p>
 
-      <form id="orderForm" class="bg-white shadow-lg rounded-xl p-8 space-y-5">
-        <!-- Honeypot hidden field -->
-        <input type="text" name="honeypot" id="honeypot" style="display:none">
-
+      <form id="orderForm" class="bg-white shadow-lg rounded-xl p-6 space-y-5">
+        <div class="hidden">
+          <!-- honeypot field -->
+          <input id="honeypot" type="text" name="botField">
+        </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-          <input type="text" name="fullName" required class="w-full border-gray-300 rounded-lg px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500"/>
+          <input type="text" name="fullName" required class="w-full border-gray-300 rounded-lg px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500">
         </div>
-
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-          <input type="email" name="email" required class="w-full border-gray-300 rounded-lg px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500"/>
+          <input type="email" name="email" required class="w-full border-gray-300 rounded-lg px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500">
         </div>
-
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Mobile</label>
-          <input type="tel" name="mobile" pattern="[0-9]{10}" maxlength="10" required class="w-full border-gray-300 rounded-lg px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500"/>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
+          <input type="tel" name="mobile" pattern="[0-9]{10}" maxlength="10" class="w-full border-gray-300 rounded-lg px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500">
         </div>
-
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Product</label>
-          <input type="text" name="product" required class="w-full border-gray-300 rounded-lg px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500"/>
+          <input type="text" name="product" required class="w-full border-gray-300 rounded-lg px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500">
         </div>
-
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
-          <input type="text" name="paymentMethod" required class="w-full border-gray-300 rounded-lg px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500"/>
+          <input type="text" name="paymentMethod" required class="w-full border-gray-300 rounded-lg px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500">
         </div>
-
-        <input type="hidden" name="ticketType" value="Order" />
-
         <div class="flex items-center gap-2">
           <input id="captchaCheck" type="checkbox" required class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
           <label for="captchaCheck" class="text-sm text-gray-700">I am not a robot</label>
         </div>
-
-        <button type="submit" class="w-full bg-indigo-600 text-white font-medium px-6 py-3 rounded-lg hover:bg-indigo-700">Submit Order</button>
+        <button type="submit" class="w-full bg-indigo-600 text-white font-medium px-6 py-3 rounded-lg hover:bg-indigo-700">
+          Submit Order
+        </button>
         <div id="orderStatus" class="text-center text-sm mt-2"></div>
       </form>
     </div>
@@ -74,10 +68,8 @@
 
   <!-- FOOTER -->
   <footer class="bg-gray-800 text-white">
-    <div class="container mx-auto px-6 py-12">
-      <div class="text-center text-gray-500 border-t border-gray-700 pt-8">
-        <p>&copy; <span id="copyright-year"></span> CoRamTix — Premium Server Hosting</p>
-      </div>
+    <div class="max-w-7xl mx-auto px-6 py-8 text-center text-gray-400 border-t border-gray-700">
+      <p>&copy; <span id="copyright-year"></span> CoRamTix — Premium Server Hosting</p>
     </div>
   </footer>
 
