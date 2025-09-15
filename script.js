@@ -1,13 +1,14 @@
 // update year
 document.getElementById('copyright-year').textContent = new Date().getFullYear();
 
-const cooldownSeconds = 300; // anti-spam cooldown
+const cooldownSeconds = 3000; // anti-spam cooldown
 let lastSubmitTime = 0;
 
 document.getElementById('orderForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const status = document.getElementById('orderStatus');
   status.className = 'text-center text-sm mt-2';
+  status.textContent = '';
 
   // honeypot anti-bot
   if (document.getElementById('honeypot').value.trim() !== '') {
@@ -42,9 +43,10 @@ document.getElementById('orderForm').addEventListener('submit', async (e) => {
     });
     if (res.ok) {
       lastSubmitTime = now;
-      status.textContent = '✅ Order submitted successfully!';
+      status.textContent = '✅ Order submitted successfully. You will hear from us within 24 hours.';
       status.classList.add('text-green-600');
       e.target.reset();
+      document.getElementById('captchaCheck').checked = false;
     } else {
       const errText = await res.text();
       status.textContent = '❌ Failed to submit order. ' + errText;
