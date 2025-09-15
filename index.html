@@ -1,55 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Place Order – CoRamTix</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CoRamTix Order Ticket</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body class="bg-gray-50 font-[Poppins]">
-  <div class="max-w-2xl mx-auto py-12 px-4">
-    <h1 class="text-3xl font-bold text-center mb-6">Place an Order</h1>
-    <form id="orderForm" class="bg-white p-6 rounded-xl shadow space-y-4">
-      <!-- honeypot hidden input -->
-      <input type="text" id="honeypot" name="honeypot" style="display:none">
-
-      <div>
-        <label class="block text-sm mb-1">Full Name</label>
-        <input type="text" name="fullName" required class="w-full border rounded-lg px-4 py-2">
-      </div>
-      <div>
-        <label class="block text-sm mb-1">Email</label>
-        <input type="email" name="email" required class="w-full border rounded-lg px-4 py-2">
-      </div>
-      <div>
-        <label class="block text-sm mb-1">Mobile (optional)</label>
-        <input type="text" name="mobile" class="w-full border rounded-lg px-4 py-2">
-      </div>
-      <div>
-        <label class="block text-sm mb-1">Product</label>
-        <input type="text" name="product" required class="w-full border rounded-lg px-4 py-2">
-      </div>
-      <div>
-        <label class="block text-sm mb-1">Payment Method</label>
-        <select name="paymentMethod" required class="w-full border rounded-lg px-4 py-2">
-          <option value="">Select</option>
-          <option value="UPI">UPI</option>
-          <option value="PayPal">PayPal</option>
-          <option value="Bank Transfer">Bank Transfer</option>
-        </select>
-      </div>
-      <div class="flex items-center space-x-2">
-        <input type="checkbox" id="isHuman" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
-        <label for="isHuman" class="text-sm">I am not a robot</label>
-      </div>
-      <button id="submitBtn" type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700">
-        Place Order
-      </button>
-      <p id="statusMessage" class="text-center text-sm mt-2"></p>
-      <p id="cooldownMessage" class="text-center text-sm text-gray-500 hidden"></p>
-    </form>
+<body>
+<header>
+  <div class="logo">
+    <img src="favicon.svg" alt="CoRamTix Logo">
+    <span>CORAMTIX</span>
   </div>
-  <script src="script.js"></script>
+</header>
+
+<main>
+  <form id="orderForm" class="ticketForm">
+    <h2>Order Ticket</h2>
+    <div class="field">
+      <input type="text" name="fullName" placeholder="Your Full Name" required>
+    </div>
+    <div class="field">
+      <input type="email" name="email" placeholder="Email Address" required>
+    </div>
+    <div class="field">
+      <input type="tel" name="mobile" placeholder="Mobile Number" pattern="[0-9]{10}" maxlength="10" required>
+    </div>
+    <div class="field">
+      <input type="text" name="product" placeholder="Product Name" required>
+    </div>
+    <div class="field">
+      <input type="text" name="paymentMethod" placeholder="Payment Method" required>
+    </div>
+    <input type="hidden" name="ticketType" value="Order">
+    <label class="custom-checkbox">
+      <input type="checkbox" id="humanCheck" required>
+      <span class="checkmark"></span><span>I am not a robot</span>
+    </label>
+    <button id="submitBtn" class="submitBtn" type="submit">Submit Ticket</button>
+    <div id="statusMessage" class="statusMessage"></div>
+    <div id="cooldownMessage" class="cooldownMessage" style="display:none"></div>
+  </form>
+</main>
+
+<footer>
+  &copy; <span id="year"></span> CoRamTix — Premium Server Hosting
+</footer>
+
+<script src="script.js"></script>
+<script>document.getElementById('year').textContent=new Date().getFullYear()</script>
 </body>
 </html>
